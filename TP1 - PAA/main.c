@@ -7,9 +7,12 @@
 #endif
 
 int main() {
-    //FILE *file_linha = fopen("dados_grafico_linha.txt", "a");
-    //FILE *file_coluna = fopen("dados_grafico_coluna.txt", "a");
-
+    FILE *file_linha = fopen("Grafico/dados_grafico_linha.txt", "a");
+    FILE *file_coluna = fopen("Grafico/dados_grafico_coluna.txt", "a");
+    if (file_linha == NULL) {
+        printf("Erro: arquivo file_linha não foi aberto corretamente.\n");
+        return 1; // ou outro tratamento de erro
+    }
 
     clock_t start_time, end_time;
     double elapsed_time;
@@ -46,7 +49,7 @@ int main() {
                 int linhas, colunas, chaves;
 
                 // Captura o tempo inicial
-                //start_time = clock();
+                start_time = clock();
                 processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &labirinto);
                 
                 // Vetor para armazenar o caminho
@@ -78,11 +81,11 @@ int main() {
                 free(caminho);
                 liberaLabirinto(labirinto, linhas);
 
-                //end_time = clock();
-                //elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+                end_time = clock();
+                elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
-                //fprintf(file_linha, "%d %f\n", linhas, elapsed_time);
-                //fprintf(file_coluna, "%d %f\n", colunas, elapsed_time);
+                fprintf(file_linha, "%d %f\n", linhas, 10.0);
+                fprintf(file_coluna, "%d %f\n", colunas, 10.0);
 
                 printf("Pressione Enter para continuar... \n");
                 getchar(); // To consume the newline character left by previous input
@@ -101,7 +104,7 @@ int main() {
         
     }
     // Fecha os arquivos
-    //fclose(file_linha);
-    //fclose(file_coluna);
+    fclose(file_linha);
+    fclose(file_coluna);
     return 0;
 }

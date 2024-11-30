@@ -84,8 +84,8 @@ int main() {
                 end_time = clock();
                 elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
-                fprintf(file_linha, "%d %f\n", linhas, 10.0);
-                fprintf(file_coluna, "%d %f\n", colunas, 10.0);
+                fprintf(file_linha, "%d %f\n", linhas, elapsed_time);
+                fprintf(file_coluna, "%d %f\n", colunas, elapsed_time);
 
                 printf("Pressione Enter para continuar... \n");
                 getchar(); // To consume the newline character left by previous input

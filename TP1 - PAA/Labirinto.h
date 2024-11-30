@@ -6,7 +6,16 @@
 #include <unistd.h>
 #include <locale.h>
 
-#define MODO_ANALISE
+#define cor_vermelha  "\x1b[41m" 
+#define cor_azul  "\x1b[46m" 
+#define cor_preta "\x1b[100m\x1b[97m" 
+#define cor_verde "\x1b[42m" 
+#define cor_amarela  "\x1b[43m" 
+#define cor_branca  "\x1b[47m"
+#define resetar_cor "\x1b[0m"
+
+
+#define MODO_ANALISE 0 // Trocar para 1 caso queira o modo análise
 
 typedef struct {
     int x;
@@ -16,7 +25,7 @@ typedef struct {
 int** alocaLabirinto(int linhas, int colunas);
 void liberaLabirinto(int** labirinto, int linhas);
 int posicaoValida(int** labirinto, int linhas, int colunas, int x, int y, int chaves);
-int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, int* passos);
+int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, int* passos/*, int*** matriz*/);
 void processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chaves, Posicao* inicio, int*** labirinto);
 void imprimeLabirinto(int** labirinto, int linhas, int colunas);
 

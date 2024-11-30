@@ -1,11 +1,11 @@
 
+
 #include "Labirinto.h"
 
-#ifdef MODO_ANALISE
-int chamadas_recursivas = 0;
-int nivel_maximo_recursao = 0;
+#if MODO_ANALISE == 1
+    int chamadas_recursivas = 0;
+    int nivel_maximo_recursao = 0;
 #endif
-
 
 // Função para alocar memória para o labirinto
 int** alocaLabirinto(int linhas, int colunas) {
@@ -42,15 +42,49 @@ void processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chav
 }
 
 void imprimeLabirinto(int** labirinto, int linhas, int colunas){
-    // Print da matriz
     for (int i = 0; i < linhas; i++) {
         for (int j = 0; j < colunas; j++) {
-            printf("%d ", labirinto[i][j]);
+            //printf("%d ", labirinto[i][j]);
+            if(labirinto[i][j]==9){
+                printf(cor_verde "%d " resetar_cor, labirinto[i][j]);
+            }
+            else if(labirinto[i][j]==0){
+                 printf(cor_verde "%d " resetar_cor, labirinto[i][j]);
+            }
+            else if(labirinto[i][j]==2){
+                 printf(cor_azul "%d " resetar_cor, labirinto[i][j]);
+            }
+            else if(labirinto[i][j]==3){
+                 printf(cor_vermelha "%d " resetar_cor, labirinto[i][j]);
+            }
+            else if(labirinto[i][j]==4){
+                 printf(cor_amarela "%d " resetar_cor, labirinto[i][j]);
+            }
+            else if(labirinto[i][j]==0){
+                 printf(cor_verde "%d " resetar_cor, labirinto[i][j]);
+            }
+            else if(labirinto[i][j]==1){
+                 printf(cor_branca "%d " resetar_cor, labirinto[i][j]);
+            }
+            
+            else{
+                printf("%d ", labirinto[i][j]);
+            }
         }
 
         printf("\n");
     }
 }
+
+/*void** novaMatriz(int** labirinto, int linhas, int colunas) {  
+    int** matriz = alocaLabirinto(linhas, colunas); 
+
+    for (int i = 0; i < linhas; i++) {
+        for (int j = 0; j < colunas; j++) {
+            matriz[i][j] = labirinto[i][j]; 
+        }
+    }
+}*/
 
 // Função para liberar memória do labirinto
 void liberaLabirinto(int** labirinto, int linhas) {
@@ -63,7 +97,7 @@ void liberaLabirinto(int** labirinto, int linhas) {
 // Função para verificar se a posição é válida
 int posicaoValida(int** labirinto, int linhas, int colunas, int x, int y, int chaves) {
     if (x >= 0 && x < linhas && y >= 0 && y < colunas) {
-        if (labirinto[x][y] == 1) {
+        if (labirinto[x][y] == 1 || labirinto[x][y] == 4) {
             return 1;
         } else if (labirinto[x][y] == 3 && chaves > 0) {
             return 1;
@@ -73,12 +107,11 @@ int posicaoValida(int** labirinto, int linhas, int colunas, int x, int y, int ch
 }
 
 // Função recursiva para movimentar o estudante
-int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, int* passos) {
-#ifdef MODO_ANALISE
+int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, int* passos/*, int*** matriz*/) {
+#if MODO_ANALISE == 1
     chamadas_recursivas++;
     if (nivel > nivel_maximo_recursao) nivel_maximo_recursao = nivel;
 #endif
-
     // Caso base: chegou na primeira linha
     if (x == 0) {
         caminho[*passos].x = x;
@@ -92,9 +125,9 @@ int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, 
     int estadoAtual = labirinto[x][y];
     labirinto[x][y] = -1;
 
-    // Movimentos possíveis (cima, baixo, esquerda, direita)
-    int movimentos[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
+    // Movimentos possíveis (cima, esquerda, direita, baixo)
+    int movimentos[4][2] = {{-1, 0}, {0, -1}, {0, 1},  {1, 0}};
+    
     for (int i = 0; i < 4; i++) {
         int novoX = x + movimentos[i][0];
         int novoY = y + movimentos[i][1];
@@ -105,10 +138,15 @@ int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, 
             if (labirinto[novoX][novoY] == 3) {
                 novasChaves--;
             }
+            // O estudante so usa a chave se passar por uma celula amarela (numero 4)
+            else if (labirinto[novoX][novoY] == 4) {
+                novasChaves++;
+            }
             // Tenta mover para a nova posição
-            if (movimenta_estudante(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, caminho, passos)) {
+            if (movimenta_estudante(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, caminho, passos/*,matriz*/ )) {
                 caminho[*passos].x = x;
                 caminho[*passos].y = y;
+                //*matriz[x][y] = 9;
                 (*passos)++;
                 return 1;
             }

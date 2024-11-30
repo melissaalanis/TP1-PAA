@@ -1,15 +1,23 @@
+#include <time.h>
 #include "Labirinto.h"
 
-#ifdef MODO_ANALISE
-extern int chamadas_recursivas;
-extern int nivel_maximo_recursao;
+#if MODO_ANALISE == 1
+    extern int chamadas_recursivas;
+    extern int nivel_maximo_recursao;
 #endif
 
 int main() {
+    //FILE *file_linha = fopen("dados_grafico_linha.txt", "a");
+    //FILE *file_coluna = fopen("dados_grafico_coluna.txt", "a");
+
+
+    clock_t start_time, end_time;
+    double elapsed_time;
     int opcao = 2;
     Posicao inicio;
     char nome_arquivo[30] = {0};
     int** labirinto;
+    //int** matriz;
     printf("Bem-Vinda(o) \U0001F49A\n");
     
     while(opcao == 1 || opcao==2){  //O codigo entra em looping ate que o usuario queira sair. (opcao 3
@@ -32,11 +40,13 @@ int main() {
                 if(nome_arquivo == NULL){
                     printf("Por favor, carregue antes um arquivo de dados! \n");
                     printf("Pressione qualquer tecla para continuar... \n");
-                    getchar(); // To consume the newline character left by previous input
-                    getchar(); // To wait for the Enter key
+                    getchar(); 
+                    getchar(); 
                 }
                 int linhas, colunas, chaves;
 
+                // Captura o tempo inicial
+                //start_time = clock();
                 processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &labirinto);
                 
                 // Vetor para armazenar o caminho
@@ -48,7 +58,7 @@ int main() {
 
                 imprimeLabirinto(labirinto, linhas, colunas);
 
-                if (!movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos)) {
+                if (!movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos/*, &matriz*/)) {
                     printf("O estudante se movimentou %d e percebeu que o labirinto nao tem saida.\n", passos);
                 } else {
                     printf("\nCaminho do estudante:\n\n");
@@ -60,13 +70,20 @@ int main() {
                     printf("O estudante se movimentou %d vezes e chegou na coluna %d da primeira linha\n",passos, ultima_coluna);
                 }
 
-                #ifdef MODO_ANALISE
+                #if MODO_ANALISE == 1
                     printf("Chamadas recursivas: %d\n", chamadas_recursivas);
                     printf("Nível máximo de recursividade: %d\n", nivel_maximo_recursao);
                 #endif
-
+                
                 free(caminho);
                 liberaLabirinto(labirinto, linhas);
+
+                //end_time = clock();
+                //elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+                //fprintf(file_linha, "%d %f\n", linhas, elapsed_time);
+                //fprintf(file_coluna, "%d %f\n", colunas, elapsed_time);
+
                 printf("Pressione Enter para continuar... \n");
                 getchar(); // To consume the newline character left by previous input
                 getchar(); // To wait for the Enter key
@@ -80,9 +97,11 @@ int main() {
                 break;
         }
         
-        system("clear");  // Use "cls" instead of "clear" if you are on Windows
+        system("clear");  
         
     }
- 
+    // Fecha os arquivos
+    //fclose(file_linha);
+    //fclose(file_coluna);
     return 0;
 }

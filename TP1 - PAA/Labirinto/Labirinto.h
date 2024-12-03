@@ -7,6 +7,7 @@
 #include <locale.h>
 #include <string.h>
 
+// Cores para o terminal
 #define cor_vermelha  "\x1b[41m" 
 #define cor_azul  "\x1b[46m" 
 #define cor_preta "\x1b[100m\x1b[97m" 
@@ -26,8 +27,8 @@ typedef struct {
 int** alocaLabirinto(int linhas, int colunas);
 void liberaLabirinto(int** labirinto, int linhas);
 int posicaoValida(int** labirinto, int linhas, int colunas, int x, int y, int chaves);
-int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, int* passos, int** visitados);
-void processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chaves, Posicao* inicio, int*** labirinto);
+int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, unsigned int* passos, int* tamanhoCaminho);
+int processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chaves, Posicao* inicio, int*** labirinto);
 void imprimeLabirinto(int** labirinto, int linhas, int colunas);
-
+void imprimeMatriz(int** labirinto, int linhas, int colunas);
 #endif // LABIRINTO_H

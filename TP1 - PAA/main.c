@@ -65,7 +65,7 @@ int main() {
                     getchar(); 
                     break;
                 }
-
+                printf("inicio %d %d", inicio.x, inicio.y);
                 // Vetor para armazenar o caminho feito pelo estudante
                 Posicao* caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
 
@@ -116,32 +116,44 @@ int main() {
 
             case 3:
                 srand(time(NULL)); 
-                int linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, dificuldade; // Dados que serao usados para gerar o labirinto
+                int linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, dificuldade, portal; // Dados que serao usados para gerar o labirinto
                 char nomeArquivo[100];
 
-                printf("Digite as seguintes informações do labirinto a ser gerado:\n");
-                printf("- quantidade de linhas\n");
-                printf("- quantidade de colunas\n");
-                printf("- quantidade de chaves\n");
-                printf("- quantidade de portas\n");
-                printf("- quantidade chaves no caminho\n");
-                printf("- nivel de dificuldade (1 a 3 - facil para dificil)\n");
-                printf("(Na mesma linha, separados por espaço): ");
-                scanf("%d %d %d %d %d %d", &linhas_teste, &colunas_teste, &chaves_teste, &portas_teste, &chaves_caminho, &dificuldade);
+                printf("Digite a quantidade de linhas: ");
+                scanf("%d", &linhas_teste);
+                printf("Digite a quantidade de colunas: ");
+                scanf("%d", &colunas_teste);
+                printf("Digite a quantidade de chaves: ");
+                scanf("%d", &chaves_teste);
+                printf("Digite a quantidade de portas: ");
+                scanf("%d", &portas_teste);
+                printf("Digite a quantidade de chaves no caminho: ");
+                scanf("%d", &chaves_caminho);
+                printf("Digite o nível de dificuldade (1 a 3 - fácil para difícil): ");
+                scanf("%d", &dificuldade);
+                printf("Digite a quantidade de portais (0 ou 1): ");
+                scanf("%d", &portal);
 
                 printf("Digite o nome do arquivo que você deseja gerar. (Exemplo: 'teste.txt'): ");
                 scanf("%s", nomeArquivo);
+               
+                // Verifica se o nome do arquivo esta no formato correto
+                if (!strstr(nomeArquivo, ".txt")) {
+                    strcat(nomeArquivo, ".txt");
+                }
 
-                if(geraLabirintoTeste(linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, nomeArquivo, dificuldade)){
+                if(geraLabirintoTeste(linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, nomeArquivo, dificuldade, portal)){
                     printf("Erro ao gerar o labirinto de teste! Por favor, tente de novo! \n");
                     printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
                     getchar(); 
                     getchar(); 
                     break;
-                    break;
                 }
                 printf("Labirinto gerado e salvo no arquivo '%s'\n", nomeArquivo);
-                sleep(3);
+                printf("Pressione Enter para continuar... \n");
+                getchar(); 
+                getchar(); 
+                break;
 
             default:
                 printf("Saindo.... \n");

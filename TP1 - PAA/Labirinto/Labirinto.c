@@ -146,7 +146,7 @@ void liberaLabirinto(int** labirinto, int linhas) {
 // Funcao para verificar se a posicao eh valida
 int posicaoValida(int** labirinto, int linhas, int colunas, int x, int y, int chaves) {
     if (x >= 0 && x < linhas && y >= 0 && y < colunas) { // Dentro dos limites
-        if (labirinto[x][y] == 1 || labirinto[x][y] == 4) { // Celula livre ou chave
+        if (labirinto[x][y] == 1 || labirinto[x][y] == 4 || labirinto[x][y] == 5 || labirinto[x][y] == 6) { // Celula livre ou chave
             return 1;
         } else if (labirinto[x][y] == 3 && chaves > 0) { // Porta e tem chave
             return 1;
@@ -175,6 +175,27 @@ int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, 
     // Marca a posicao como visitada
     int estadoAtual = labirinto[x][y];
     labirinto[x][y] = -1;
+
+    if(estadoAtual == 5){
+        // Busca a saída do portal (valor 6 no labirinto)
+        for (int i = 0; i < linhas; i++) {
+            for (int j = 0; j < colunas; j++) {
+                if (labirinto[i][j] == 6) {
+                    printf("Transportando para a saída do portal (%d, %d).\n", i, j);
+                    // Tenta mover para a nova posicao
+                    if (movimenta_estudante(labirinto, linhas, colunas, i, j, chaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
+                        // Se conseguiu, adiciona a posicao ao caminho e atuliza seu tamanho
+                        caminho[*tamanhoCaminho].x = x;
+                        caminho[*tamanhoCaminho].y = y;
+                        //*matriz[x][y] = 9;
+                        (*tamanhoCaminho)++;
+                        return 1;
+                    }
+
+                }
+            }
+        }
+    }
 
     // Movimentos possiveis (cima, esquerda, direita, baixo)
     int movimentos[4][2] = {{-1, 0}, {0, -1}, {0, 1},  {1, 0}};

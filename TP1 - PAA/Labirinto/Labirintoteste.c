@@ -72,7 +72,11 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int chaves_caminho, 
     labirinto[x][y] = 0;  // posicao inicial do estudante
 
     // Adiciona portas aleatoriamente em celulas de caminho livre - coloca 3's (portas)
+    
     int qtdPortas = portas;
+    if(portas > linhas*colunas){ // Um labirinto nao pode ser todo preenchido com portas
+        qtdPortas = linhas; //quantidade maxima de portas eh o tamanho da linha (decisao da equipe para nao ficar desproporcional)
+    } 
     while(qtdPortas > 0) {
         int px = numeroAleatorio(1, linhas - 2);  // Dentro dos limites
         int py = numeroAleatorio(1, colunas - 1); 
@@ -83,9 +87,14 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int chaves_caminho, 
             qtdPortas--;
         }
     }
-
+    
+    int qtd_chaves = chaves_caminho;
+    if(chaves_caminho > linhas *colunas){ // Nao pode ter mais chaves espelhadas que o tamanho do labirinto
+        qtd_chaves = linhas*colunas;
+    }
     int chaves_adc = 0;
-    while (chaves_adc < chaves_caminho) {
+
+    while (chaves_adc < qtd_chaves) {
         int cx = numeroAleatorio(1, linhas - 1);  
         int cy = numeroAleatorio(1, colunas - 1);  
         if (labirinto[cx][cy] == 1) {  // A chave so pode ser colocada em um caminho livre

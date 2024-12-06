@@ -43,12 +43,12 @@ int processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chave
 }
 
 // Imprime o labirinto colorido
-void imprimeLabirinto(int** labirinto, int linhas, int colunas){
+void imprimeCaminho(int** labirinto, int linhas, int colunas){
     for (int i = 0; i < linhas; i++) {
         for (int j = 0; j < colunas; j++) {
             //printf("%d ", labirinto[i][j]);
             if(labirinto[i][j]==9){
-                printf(cor_verde "%d " resetar_cor, labirinto[i][j]);
+                printf(cor_verde "  " resetar_cor);
             }
             else if(labirinto[i][j]==0){
                  printf(cor_verde "%d " resetar_cor, labirinto[i][j]);
@@ -78,62 +78,6 @@ void imprimeLabirinto(int** labirinto, int linhas, int colunas){
     }
 }
 
-/*void** novaMatriz(int** labirinto, int linhas, int colunas) {  
-    FILE* arquivo = fopen(nome_arquivo, "r");
-    if (!arquivo) {
-        printf("Erro ao abrir o arquivo!\n");
-        return;
-    }
-
-    // Le as dimensoes e numero de chaves
-    fscanf(arquivo, "%d %d %d", linhas, colunas, chaves);
-
-    // Aloca e carrega o labirinto
-    *labirinto = alocaLabirinto(*linhas, *colunas);
-
-    for (int i = 0; i < *linhas; i++) {
-        for (int j = 0; j < *colunas; j++) {
-            fscanf(arquivo, "%1d", &(*labirinto)[i][j]);
-            if ((*labirinto)[i][j] == 0) {
-                inicio->x = i;
-                inicio->y = j;
-            }
-        }
-    }    
-    fclose(arquivo);
-}*/
-
-// Imprime a matriz que sera usada para mostrar o caminho
-void imprimeMatriz(int** labirinto, int linhas, int colunas){
-    for (int i = 0; i < linhas; i++) {
-        for (int j = 0; j < colunas; j++) {
-            //printf("%d ", labirinto[i][j]);
-            if(labirinto[i][j]==-1){
-                printf(cor_verde "  " resetar_cor);
-            }
-            else if(labirinto[i][j]==0){
-                 printf(cor_verde "  " resetar_cor);
-            }
-            else if(labirinto[i][j]==2){
-                 printf(cor_azul "  " resetar_cor);
-            }
-            else if(labirinto[i][j]==3){
-                 printf(cor_vermelha "  " resetar_cor);
-            }
-            else if(labirinto[i][j]==4){
-                 printf(cor_amarela "  " resetar_cor);
-            }
-            else if(labirinto[i][j]==0){
-                 printf(cor_verde "  " resetar_cor);
-            }
-            else if(labirinto[i][j]==1){
-                 printf(cor_branca "  " resetar_cor);
-            }
-        }
-
-        printf("\n");
-    }
-}
 
 // Funcao para liberar memoria do labirinto
 void liberaLabirinto(int** labirinto, int linhas) {
@@ -164,7 +108,7 @@ int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, 
 
     // Caso base: chegou na primeira linha
     if (x == 0) {
-        labirinto[x][y] = -1;
+        labirinto[x][y] = 9;
         caminho[*tamanhoCaminho].x = x;
         caminho[*tamanhoCaminho].y = y;
         (*tamanhoCaminho)++;
@@ -174,20 +118,20 @@ int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, 
 
     // Marca a posicao como visitada
     int estadoAtual = labirinto[x][y];
-    labirinto[x][y] = -1;
+    labirinto[x][y] = 9;
 
     if(estadoAtual == 5){
         // Busca a saída do portal (valor 6 no labirinto)
         for (int i = 0; i < linhas; i++) {
             for (int j = 0; j < colunas; j++) {
                 if (labirinto[i][j] == 6) {
-                    printf("Transportando para a saída do portal (%d, %d).\n", i, j);
+                    printf("Transportando para a saída do portal (%d, %d).\n\n", i, j);
                     // Tenta mover para a nova posicao
                     if (movimenta_estudante(labirinto, linhas, colunas, i, j, chaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
                         // Se conseguiu, adiciona a posicao ao caminho e atuliza seu tamanho
                         caminho[*tamanhoCaminho].x = x;
                         caminho[*tamanhoCaminho].y = y;
-                        //*matriz[x][y] = 9;
+                        
                         (*tamanhoCaminho)++;
                         return 1;
                     }
@@ -235,4 +179,97 @@ int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, 
     // Desmarca a posicao e retorna ao estado anterior
     labirinto[x][y] = estadoAtual;
     return 0;
+}
+
+int movimenta_estudante_matriz(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, unsigned int* passos, int* tamanhoCaminho) {
+    #if MODO_ANALISE == 1
+        chamadas_recursivas++;
+        if (nivel > nivel_maximo_recursao) nivel_maximo_recursao = nivel;
+    #endif
+
+    // Caso base: chegou na primeira linha
+    if (x == 0) {
+        labirinto[x][y] = 9;  // Marca a posição final no caminho
+
+        imprimeCaminho(labirinto, linhas, colunas);  // Mostra o labirinto atualizado
+        printf("\n");
+
+        caminho[*tamanhoCaminho].x = x;
+        caminho[*tamanhoCaminho].y = y;
+        (*tamanhoCaminho)++;
+        (*passos)++;
+        return 1;
+    }
+
+    // Marca a posição como visitada
+    int estadoAtual = labirinto[x][y];
+    labirinto[x][y] = 9;  // Marca o caminho atual com 9 (verde)
+    printf("Linha: %d Coluna: %d\n", caminho[*tamanhoCaminho].x, caminho[*tamanhoCaminho].y);
+    imprimeCaminho(labirinto, linhas, colunas);  // Atualiza a visualização do labirinto
+    printf("\n");
+
+    if(estadoAtual == 5){
+        // Busca a saída do portal (valor 6 no labirinto)
+        for (int i = 0; i < linhas; i++) {
+            for (int j = 0; j < colunas; j++) {
+                if (labirinto[i][j] == 6) {
+                    
+                    printf("Transportando para a saída do portal (%d, %d).\n", i, j);
+                    // Tenta mover para a nova posicao
+                    //labirinto[i][j] = 9;
+                    //imprimeCaminho(labirinto, linhas, colunas);  // Atualiza a visualização do labirinto
+                    printf("\n");
+                    if (movimenta_estudante_matriz(labirinto, linhas, colunas, i, j, chaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
+                        // Se conseguiu, adiciona a posicao ao caminho e atualiza seu tamanho
+                        caminho[*tamanhoCaminho].x = x;
+                        caminho[*tamanhoCaminho].y = y;
+                        
+                        //imprimeCaminho(labirinto, linhas, colunas);  // Atualiza a visualização do labirinto
+                        (*tamanhoCaminho)++;
+                        return 1;
+                    }
+
+                }
+            }
+        }
+    }
+
+    // Movimentos possíveis (cima, esquerda, direita, baixo)
+    int movimentos[4][2] = {{-1, 0}, {0, -1}, {0, 1},  {1, 0}};
+    
+    // Tenta mover para as 4 direções
+    for (int i = 0; i < 4; i++) {
+        // Calcula a nova posição
+        int novoX = x + movimentos[i][0];
+        int novoY = y + movimentos[i][1];
+
+        if (posicaoValida(labirinto, linhas, colunas, novoX, novoY, chaves)) {  // Verifica se a posição é válida
+            (*passos)++;  // Contabiliza as movimentações do estudante
+
+            // Ajusta as chaves caso encontre uma porta ou chave
+            int novasChaves = chaves;
+            if (labirinto[novoX][novoY] == 3) {  // Porta
+                novasChaves--;
+            } else if (labirinto[novoX][novoY] == 4) {  // Chave
+                novasChaves++;
+            }
+
+            // Move para a nova posição
+            if (movimenta_estudante_matriz(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
+                // Se conseguiu, registra a posição no caminho
+                caminho[*tamanhoCaminho].x = x;
+                caminho[*tamanhoCaminho].y = y;
+                (*tamanhoCaminho)++;
+                return 1;
+            }
+        }
+    }
+
+    // Backtracking: desmarca a posição e restaura o estado original
+    labirinto[x][y] = estadoAtual;  // Restaura o valor original
+    imprimeCaminho(labirinto, linhas, colunas);  // Atualiza a visualização durante o backtracking
+    printf("\n");
+
+
+    return 0;  // Indica que não foi possível encontrar um caminho
 }

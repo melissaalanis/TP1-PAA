@@ -28,7 +28,7 @@ int** alocaLabirinto(int linhas, int colunas);
 void liberaLabirinto(int** labirinto, int linhas);
 int posicaoValida(int** labirinto, int linhas, int colunas, int x, int y, int chaves);
 int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, unsigned int* passos, int* tamanhoCaminho);
+int movimenta_estudante_matriz(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, unsigned int* passos, int* tamanhoCaminho);
 int processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chaves, Posicao* inicio, int*** labirinto);
-void imprimeLabirinto(int** labirinto, int linhas, int colunas);
-void imprimeMatriz(int** labirinto, int linhas, int colunas);
+void imprimeCaminho(int** labirinto, int linhas, int colunas);
 #endif // LABIRINTO_H

@@ -19,21 +19,32 @@ int main() {
     double elapsed_time;
 
     int opcao = 2;
+    int linhas, colunas, chaves;
+    unsigned int passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
+    int tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
+    int ultima_coluna = 0; 
     Posicao inicio;
+    Posicao* caminho;
     char nome_arquivo[30] = "";
-    int** labirinto;
-    //int** matriz;
+    int** labirinto = NULL;
+    int** matriz = NULL;
+    int resultado_labirinto = -1; // Indica que nunca foi calculado a saida
 
-    printf("Bem-Vinda(o) \U0001F49A\n");
+    printf("|-------------------------------------------------------|\n");
+    printf("|                   Bem-Vinda(o) \U0001F49A                     |\n");
+    printf("|-------------------------------------------------------|\n");
     
-    while(opcao == 1 || opcao==2 || opcao==3){  //O codigo entra em looping ate que o usuario queira sair (opcao 4)
+    while(opcao == 1 || opcao==2 || opcao==3 || opcao==4){  //O codigo entra em looping ate que o usuario queira sair (opcao 4)
 
-        printf("Opcoes do labirinto:\n");
-        printf("(1) Carregar novo arquivo de dados. \n");
-        printf("(2) Processar e exibir resposta.\n");
-        printf("(3) Gerar um labirinto de teste (Extra).\n");
-        printf("(4 ou qualquer outro caracter) Sair do programa. \n");
-        printf("Digite um numero: ");
+        printf("| Opcoes do labirinto:                                  |\n");
+        printf("|-------------------------------------------------------|\n");
+        printf("| (1) Carregar novo arquivo de dados.                   |\n");
+        printf("| (2) Processar e exibir resposta.                      |\n");
+        printf("| (3) Gerar um labirinto de teste (Extra).              |\n");
+        printf("| (4) Observar caminho feito pelo estudante (Extra).    |\n");
+        printf("| (5 ou qualquer outro caracter) Sair do programa.      |\n");
+        printf("|-------------------------------------------------------|\n");
+        printf("\nDigite um numero: ");
         scanf("%d",&opcao);
         printf("\n");
 
@@ -41,6 +52,13 @@ int main() {
             case 1: 
                 printf("Por favor digite o nome do arquivo: ");
                 scanf("%s", nome_arquivo);
+                if(labirinto != NULL){
+                    liberaLabirinto(labirinto, linhas);
+                    liberaLabirinto(matriz, linhas);
+                    free(caminho);
+                }
+                resultado_labirinto = -1; // Indica que nunca foi calculado a saida
+
                 sleep(1);
                 break;
             case 2:
@@ -50,9 +68,7 @@ int main() {
                     getchar(); 
                     getchar(); 
                     break;
-                }
-
-                int linhas, colunas, chaves;
+                }    
                 
                 // Captura o tempo inicial
                 start_time = clock();
@@ -65,42 +81,55 @@ int main() {
                     getchar(); 
                     break;
                 }
-                printf("inicio %d %d", inicio.x, inicio.y);
-                // Vetor para armazenar o caminho feito pelo estudante
-                Posicao* caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
 
-                unsigned int passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
-                int tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
-                int ultima_coluna = 0; 
+
+                if(resultado_labirinto == -1){
+                    // Preenche os dados do labirinto 
+                    if(processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &labirinto)){
+                        printf("Por favor, carregue um novo arquivo de dados! \n");
+                        printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
+                        getchar(); 
+                        getchar(); 
+                        break;
+                    }
+                    
+                    // Vetor para armazenar o caminho feito pelo estudante
+                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
+
+                    passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
+                    tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
+                    ultima_coluna = 0; 
+
+                    // Vetor para armazenar o caminho feito pelo estudante
+                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
+
+                    resultado_labirinto = movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
+
+                } 
 
                 printf("Processando labirinto...\n\n");
-                
-                imprimeLabirinto(labirinto, linhas, colunas);
 
-                int resultado = movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida
-                
-                if (resultado == 0) {
-                    printf("O estudante se movimentou %d e percebeu que o labirinto nao tem saida.\n", passos);
+                if (resultado_labirinto == 0) {
+                    imprimeCaminho(labirinto, linhas, colunas);
+                    printf("\nO estudante se movimentou %d e percebeu que o labirinto nao tem saida.\n", passos);
                 } else {
                     printf("\nCaminho do estudante:\n\n");
                     for (int i = tamanhoCaminho - 1; i >= 0; i--) { // Exibe o caminho feito ate saida comecando do inicio e indo ate a linha 0
                         printf("Linha: %d Coluna: %d\n", caminho[i].x, caminho[i].y);
                         ultima_coluna = caminho[i].y;
                     }
-                    printf("O estudante se movimentou %d vezes e chegou na coluna %d da primeira linha\n",passos, ultima_coluna);
+                    printf("\nO estudante se movimentou %d vezes e chegou na coluna %d da primeira linha\n\n",passos, ultima_coluna);
+                    imprimeCaminho(labirinto, linhas, colunas);
+
                 }
 
+
+
                 #if MODO_ANALISE == 1 // Quando o valor for 1, o modo analise estara ativado
-                    printf("Chamadas recursivas: %d\n", chamadas_recursivas);
-                    printf("Nível máximo de recursividade: %d\n", nivel_maximo_recursao);
+                    printf("\nChamadas recursivas: %d\n", chamadas_recursivas);
+                    printf("Nível máximo de recursividade: %d\n\n", nivel_maximo_recursao);
                 #endif
-
-                imprimeMatriz(labirinto, linhas, colunas);
                 
-                // Libera a memoria alocada
-                free(caminho);
-                liberaLabirinto(labirinto, linhas);
-
                 
                 end_time = clock(); // Captura o tempo final
                 elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC; // Calcula o tempo total
@@ -153,6 +182,67 @@ int main() {
                 printf("Pressione Enter para continuar... \n");
                 getchar(); 
                 getchar(); 
+                break;
+
+            case 4:
+                if (strcmp(nome_arquivo, "") == 0) { // Verifica se o nome do arquivo foi carregado
+                    printf("Por favor, carregue antes um arquivo de dados! \n");
+                    printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
+                    getchar(); 
+                    getchar(); 
+                    break;
+                }
+
+                if(resultado_labirinto == -1){
+                    // Preenche os dados do labirinto 
+                    if(processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &labirinto)){
+                        printf("Por favor, carregue um novo arquivo de dados! \n");
+                        printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
+                        getchar(); 
+                        getchar(); 
+                        break;
+                    }
+                    
+                    // Vetor para armazenar o caminho feito pelo estudante
+                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
+
+                    passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
+                    tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
+                    ultima_coluna = 0; 
+
+                    // Vetor para armazenar o caminho feito pelo estudante
+                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
+
+                    resultado_labirinto = movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
+
+                } 
+
+                printf("Processando labirinto...\n\n");
+
+                if(resultado_labirinto == 0){
+                    imprimeCaminho(labirinto, linhas, colunas);
+                    printf("\nO estudante se movimentou %d e percebeu que o labirinto nao tem saida.\n\n", passos);
+                } else {
+                    // Preenche os dados do labirinto
+                    processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &matriz);
+                    // Vetor para armazenar o caminho feito pelo estudante
+                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
+                    passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
+                    tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
+                    ultima_coluna = 0; 
+
+                    movimenta_estudante_matriz(matriz, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho);
+                    //liberaLabirinto(matriz, linhas); // Libera a memória do labirinto original e da matriz copiada após o uso
+                }
+
+                #if MODO_ANALISE == 1 // Quando o valor for 1, o modo analise estara ativado
+                        printf("Chamadas recursivas: %d\n", chamadas_recursivas);
+                        printf("Nível máximo de recursividade: %d\n\n", nivel_maximo_recursao);
+                #endif
+
+                printf("Pressione Enter para continuar... \n");
+                getchar();
+                getchar();
                 break;
 
             default:

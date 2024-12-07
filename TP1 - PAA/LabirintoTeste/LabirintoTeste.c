@@ -1,4 +1,4 @@
-#include "Labirintoteste.h"
+#include "LabirintoTeste.h"
 
 // Alocando memoria para o labirinto
 int** alocaLabirintoTeste(int linhas, int colunas) {
@@ -41,7 +41,9 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int chaves_caminho, 
             labirinto[i][j] = 1;  
         }
     }
-
+    if(dificuldade > 3){
+        dificuldade = 3;
+    }
     // Coloca paredes aleatorias no labirinto - numeros 2's (paredes)
     for (int i = 0; i < linhas; i++) { // A DIFICULDADE TEM A VER COM A GERACAO DE PAREDES ALEATORIAS
         for (int j = 0; j < colunas; j++) {
@@ -77,6 +79,7 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int chaves_caminho, 
     if(portas > linhas*colunas){ // Um labirinto nao pode ser todo preenchido com portas
         qtdPortas = linhas; //quantidade maxima de portas eh o tamanho da linha (decisao da equipe para nao ficar desproporcional)
     } 
+
     while(qtdPortas > 0) {
         int px = numeroAleatorio(1, linhas - 2);  // Dentro dos limites
         int py = numeroAleatorio(1, colunas - 1); 
@@ -90,7 +93,7 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int chaves_caminho, 
     
     int qtd_chaves = chaves_caminho;
     if(chaves_caminho > linhas *colunas){ // Nao pode ter mais chaves espelhadas que o tamanho do labirinto
-        qtd_chaves = linhas*colunas;
+        qtd_chaves = linhas;
     }
     int chaves_adc = 0;
 
@@ -102,7 +105,7 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int chaves_caminho, 
             chaves_adc++;
         }
     }  
-
+    
     if(portal > 0){
         while (1){
             int ix = numeroAleatorio(1, linhas - 2);  // Dentro dos limites
@@ -121,7 +124,7 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int chaves_caminho, 
             }
         }
     }
-
+    printf("deu\n");
     // Salva o labirinto no arquivo
     for (int i = 0; i < linhas; i++) {
         for (int j = 0; j < colunas; j++) {

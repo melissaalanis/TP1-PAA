@@ -1,11 +1,16 @@
 #include <time.h>
 #include "Labirinto/Labirinto.h"
-#include "Labirinto/Labirintoteste.h"
+#include "LabirintoTeste/LabirintoTeste.h"
 
 #if MODO_ANALISE == 1 // Quando o valor for 1, o modo analise estara ativado
     extern int chamadas_recursivas;
     extern int nivel_maximo_recursao;
 #endif
+
+int processaSaida(){
+    return 0;
+}
+
 
 int main() {
     FILE *file_grafico = fopen("Grafico/dados_grafico.txt", "a"); // Abre e cria, se nao existir, o arquivo para escrever os dados que serao plotados no grafico
@@ -52,9 +57,11 @@ int main() {
             case 1: 
                 printf("Por favor digite o nome do arquivo: ");
                 scanf("%s", nome_arquivo);
+                
                 if(labirinto != NULL){
                     liberaLabirinto(labirinto, linhas);
-                    liberaLabirinto(matriz, linhas);
+                    if(matriz != NULL)
+                        liberaLabirinto(matriz, linhas);
                     free(caminho);
                 }
                 resultado_labirinto = -1; // Indica que nunca foi calculado a saida
@@ -70,20 +77,10 @@ int main() {
                     break;
                 }    
                 
-                // Captura o tempo inicial
-                start_time = clock();
-                
-                // Preenche os dados do labirinto 
-                if(processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &labirinto)){
-                    printf("Por favor, carregue um novo arquivo de dados! \n");
-                    printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
-                    getchar(); 
-                    getchar(); 
-                    break;
-                }
-
-
+            
                 if(resultado_labirinto == -1){
+                    // Captura o tempo inicial
+                    start_time = clock();
                     // Preenche os dados do labirinto 
                     if(processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &labirinto)){
                         printf("Por favor, carregue um novo arquivo de dados! \n");
@@ -92,22 +89,23 @@ int main() {
                         getchar(); 
                         break;
                     }
-                    
+
                     // Vetor para armazenar o caminho feito pelo estudante
                     caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
-
                     passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
                     tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
                     ultima_coluna = 0; 
 
-                    // Vetor para armazenar o caminho feito pelo estudante
-                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
+                    resultado_labirinto = movimentaEstudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
+                    end_time = clock(); // Captura o tempo final
+                    elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC; // Calcula o tempo total
 
-                    resultado_labirinto = movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
-
+                    if(linhas == colunas){
+                        fprintf(file_grafico, "%d %f\n", colunas, elapsed_time); // O grafico so eh gerado para labirintos quadrados
+                    }
                 } 
 
-                printf("Processando labirinto...\n\n");
+                printf("Processando labirinto...\n");
 
                 if (resultado_labirinto == 0) {
                     imprimeCaminho(labirinto, linhas, colunas);
@@ -131,13 +129,6 @@ int main() {
                 #endif
                 
                 
-                end_time = clock(); // Captura o tempo final
-                elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC; // Calcula o tempo total
-
-                if(linhas == colunas){
-                    fprintf(file_grafico, "%d %f\n", colunas, elapsed_time); // O grafico so eh gerado para labirintos quadrados
-                }
-
                 printf("Pressione Enter para continuar... \n");
                 getchar(); 
                 getchar(); 
@@ -170,7 +161,7 @@ int main() {
                 if (!strstr(nomeArquivo, ".txt")) {
                     strcat(nomeArquivo, ".txt");
                 }
-
+                
                 if(geraLabirintoTeste(linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, nomeArquivo, dificuldade, portal)){
                     printf("Erro ao gerar o labirinto de teste! Por favor, tente de novo! \n");
                     printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
@@ -194,6 +185,8 @@ int main() {
                 }
 
                 if(resultado_labirinto == -1){
+                    // Captura o tempo inicial
+                    start_time = clock();
                     // Preenche os dados do labirinto 
                     if(processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &labirinto)){
                         printf("Por favor, carregue um novo arquivo de dados! \n");
@@ -202,20 +195,21 @@ int main() {
                         getchar(); 
                         break;
                     }
-                    
                     // Vetor para armazenar o caminho feito pelo estudante
                     caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
-
                     passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
                     tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
                     ultima_coluna = 0; 
 
-                    // Vetor para armazenar o caminho feito pelo estudante
-                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
+                    resultado_labirinto = movimentaEstudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
+                    end_time = clock(); // Captura o tempo final
+                    elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC; // Calcula o tempo total
 
-                    resultado_labirinto = movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
-
+                    if(linhas == colunas){
+                        fprintf(file_grafico, "%d %f\n", colunas, elapsed_time); // O grafico so eh gerado para labirintos quadrados
+                    }
                 } 
+
 
                 printf("Processando labirinto...\n\n");
 
@@ -225,14 +219,9 @@ int main() {
                 } else {
                     // Preenche os dados do labirinto
                     processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &matriz);
-                    // Vetor para armazenar o caminho feito pelo estudante
-                    caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
                     passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
-                    tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
-                    ultima_coluna = 0; 
 
-                    movimenta_estudante_matriz(matriz, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho);
-                    //liberaLabirinto(matriz, linhas); // Libera a memória do labirinto original e da matriz copiada após o uso
+                    movimentaEstudanteMatriz(matriz, linhas, colunas, inicio.x, inicio.y, chaves, 0, &passos);
                 }
 
                 #if MODO_ANALISE == 1 // Quando o valor for 1, o modo analise estara ativado

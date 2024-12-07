@@ -1,36 +1,5 @@
 #include "LabirintoTeste.h"
 
-int** alocaLabirintoTeste(int linhas, int colunas) {
-    int** labirinto = (int**)malloc(linhas * sizeof(int*));
-    if (!labirinto) {
-        printf("Erro: Falha ao alocar memória para o labirinto.\n");
-        return NULL;
-    }
-    for (int i = 0; i < linhas; i++) {
-        labirinto[i] = (int*)malloc(colunas * sizeof(int));
-        if (!labirinto[i]) {
-            printf("Erro: Falha ao alocar memória para a linha %d.\n", i);
-            liberaLabirintoTeste(labirinto, i);
-            return NULL;
-        }
-    }
-    return labirinto;
-}
-
-void liberaLabirintoTeste(int** labirinto, int linhas) {
-    if (!labirinto) return; // Verifica se o ponteiro é NULL
-    for (int i = 0; i < linhas; i++) {
-        if (labirinto[i]) { // Verifica se cada linha foi alocada
-            free(labirinto[i]);
-            labirinto[i] = NULL; // Evita dangling pointers
-        }
-    }
-    free(labirinto);
-    labirinto = NULL; // Evita dangling pointers
-}
-
-
-
 // Gera um numero aleatorio entre minimo e maximo
 int numeroAleatorio(int minimo, int maximo) {
     return minimo + rand() % (maximo - minimo + 1);
@@ -38,32 +7,34 @@ int numeroAleatorio(int minimo, int maximo) {
 
 int calculaCelulasLivres(int linhas, int colunas, int dificuldade) {
     int total_celulas = linhas * colunas;
-
-    // Estimativa de paredes baseadas na dificuldade
+    //Como são criadas paredes de acordo com a dificuldade, faz se uma estimativa de quantas serão criadas uma vez que é aleatoriamente e não tem como prever
+    //A previsão é feita dividindo a quantidade total de células pela quantidade de probabilidade de paredes escolhidas na geração de labirintos
     int paredes_estimada = 0;
-    if (dificuldade <= 1) {
+    if (dificuldade == 1) {
         paredes_estimada = total_celulas / 5; // 20%
     } else if (dificuldade == 2) {
         paredes_estimada = total_celulas / 4; // 25%
     } else if (dificuldade >= 3) {
         paredes_estimada = total_celulas / 3; // 33%
     }
+    //Apos estimar a quantidade 
     int reservadas = 1; // Para entrada e saída
     int celulas_livres = total_celulas - paredes_estimada - reservadas;
     return celulas_livres;  
 }
 
 int verificaLimites(int linhas, int colunas, int portas, int chaves_caminho, int portal, int dificuldade, int chaves) {
-    if(linhas <= 0 || colunas <= 0 || portas < 0 || chaves_caminho < 0 || portal < 0 || dificuldade < 0 || chaves < 0){
+    if(linhas <= 0 || colunas <= 0 || portas < 0 || chaves_caminho < 0 || portal < 0 || dificuldade <= 0 || chaves < 0){ // Verifica se os elemntos do labirinto são lógicos
         return 1;
     }
     int celulas_livres = calculaCelulasLivres(linhas, colunas, dificuldade);
-    int elementos = portas * 3 + chaves_caminho + (portal > 0 ? 2 : 0);
-
-    if (elementos >= celulas_livres / 2 ) {        
-        return 1; 
+    int elementos = portas * 3 + chaves_caminho + (portal > 0 ? 2 : 0); // Soma a quantidade de elementos, para o portal, caso exista, é contabilizado 2 pois possui entrada e saída
+    //Para as portas, o valor é multiplicado por 3, pois ao se criar uma porte duas paredes são adicionadas ao seu lado
+    if (elementos >= celulas_livres / 2 ) {    //Caso a quantidade de elementos seja maior ou igual a quantidade de celulas livres divido por 2 não é possível criar um labirinto    
+    // A comparação é feita com celulas livres / 2 para seguir a proporção de labirintos pequenos, porque por mais que tenha celulas livres pode não ser viável e lógico criar o labirinto
+        return 1;  
     }
-    if(colunas <3){
+    if(colunas <3){ // Levando em consideração a maneira que que foi implementada a criação de labiritos se tivesse menos que 3 colunas seria inviavel 
         return 1;
     }
 
@@ -71,17 +42,12 @@ int verificaLimites(int linhas, int colunas, int portas, int chaves_caminho, int
 }
 
 // Gera o labirinto de teste com base nos parametros passados
-int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chaves_caminho, const char* nomeArquivo, int dificuldade, int portal) {
+int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chaves_caminho, const char* nome_arquivo, int dificuldade, int portal) {
+    int labirinto[linhas][colunas]; // Cria o labirinto
     
-    int** labirinto = alocaLabirintoTeste(linhas, colunas);
-    if (labirinto == NULL) {
-        return 1; // Retorna 1 se houver erro
-    }
-
-    FILE* arquivo = fopen(nomeArquivo, "w"); // Cria o arquivo para salvar o labirinto
+    FILE* arquivo = fopen(nome_arquivo, "w"); // Cria o arquivo para salvar o labirinto
     if (!arquivo) {
         printf("Erro ao criar o arquivo!\n");
-        liberaLabirintoTeste(labirinto, linhas);
         return 1; // Retorna 1 se houver erro
     }
 
@@ -96,9 +62,6 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
 
     if(dificuldade > 3){
         dificuldade = 3;
-    }
-    if(dificuldade == 0){
-        dificuldade = 1;
     }
 
     // Coloca paredes aleatorias no labirinto - numeros 2's (paredes)
@@ -133,9 +96,6 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
     // Adiciona portas aleatoriamente em celulas de caminho livre - coloca 3's (portas)
     
     int qtdPortas = portas;
-    if(portas > linhas*colunas){ // Um labirinto nao pode ser todo preenchido com portas
-        qtdPortas = linhas; //quantidade maxima de portas eh o tamanho da linha (decisao da equipe para nao ficar desproporcional)
-    }
 
     while(qtdPortas > 0) {
         int px = numeroAleatorio(1, linhas - 2);  // Dentro dos limites
@@ -149,9 +109,6 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
     }
     
     int qtd_chaves = chaves_caminho;
-    if(chaves_caminho > linhas *colunas){ // Nao pode ter mais chaves espelhadas que o tamanho do labirinto
-        qtd_chaves = linhas;
-    }
     int chaves_adc = 0;
 
     while (chaves_adc < qtd_chaves) {
@@ -163,15 +120,11 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
         }
     }  
     
-    if(portal > 1){
-        portal = numeroAleatorio(0,1); // Se o portal for diferente de 0 ou 1, ele sera aleatorio
-    }
-
     if(portal > 0){
         while (1){
             int ix = numeroAleatorio(1, linhas - 2);  // Dentro dos limites
             int iy = numeroAleatorio(1, colunas - 1); 
-            if(labirinto[ix][iy] == 1 || labirinto[ix][iy] == 2 ){ // Precisa ser uma celula livre
+            if(labirinto[ix][iy] == 1 || labirinto[ix][iy] == 2 ){ // Precisa ser uma celula livre ou parede
                 labirinto[ix][iy] = 5; // Marca como entrada do portal
                 break;
             }
@@ -179,7 +132,7 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
         while (1){
             int fx = numeroAleatorio(1, linhas - 2);  // Dentro dos limites
             int fy = numeroAleatorio(1, colunas - 1); 
-            if(labirinto[fx][fy] == 1 || labirinto[fx][fy] == 2 ){ // Precisa ser uma celula livre
+            if(labirinto[fx][fy] == 1 || labirinto[fx][fy] == 2 ){ // Precisa ser uma celula livre ou parede
                 labirinto[fx][fy] = 6; // Marca como saida do portal
                 break;
             }
@@ -193,10 +146,7 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
         fprintf(arquivo, "\n");
     }
 
-    fflush(arquivo);
     fclose(arquivo);
-    
-    liberaLabirintoTeste(labirinto, linhas);
     return 0;
 }
 

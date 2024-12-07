@@ -45,7 +45,6 @@ int processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chave
 void imprimeCaminho(int** labirinto, int linhas, int colunas){
     for (int i = 0; i < linhas; i++) {
         for (int j = 0; j < colunas; j++) {
-            //printf("%d ", labirinto[i][j]);
             if(labirinto[i][j]==9){
                 printf(cor_verde "  " resetar_cor);
             }
@@ -99,7 +98,7 @@ int posicaoValida(int** labirinto, int linhas, int colunas, int x, int y, int ch
 }
 
 // Funcao recursiva para movimentar o estudante
-int movimentaEstudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, unsigned int* passos, int* tamanhoCaminho) {
+int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, Posicao* caminho, unsigned int* passos, int* tamanho_caminho) {
     #if MODO_ANALISE == 1 /// Variaveis para analise
         chamadas_recursivas++;
         if (nivel > nivel_maximo_recursao) nivel_maximo_recursao = nivel; 
@@ -108,29 +107,29 @@ int movimentaEstudante(int** labirinto, int linhas, int colunas, int x, int y, i
     // Caso base: chegou na primeira linha
     if (x == 0) {
         labirinto[x][y] = 9;
-        caminho[*tamanhoCaminho].x = x;
-        caminho[*tamanhoCaminho].y = y;
-        (*tamanhoCaminho)++;
+        caminho[*tamanho_caminho].x = x;
+        caminho[*tamanho_caminho].y = y;
+        (*tamanho_caminho)++;
         (*passos)++;
         return 1;
     }
 
     // Marca a posicao como visitada
-    int estadoAtual = labirinto[x][y];
+    int estado_atual = labirinto[x][y];
     labirinto[x][y] = 9;
 
-    if(estadoAtual == 5){
+    if(estado_atual == 5){
         // Busca a saída do portal (valor 6 no labirinto)
         for (int i = 0; i < linhas; i++) {
             for (int j = 0; j < colunas; j++) {
                 if (labirinto[i][j] == 6) {
                     // Tenta mover para a nova posicao
-                    if (movimentaEstudante(labirinto, linhas, colunas, i, j, chaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
+                    if (movimenta_estudante(labirinto, linhas, colunas, i, j, chaves, nivel + 1, caminho, passos, tamanho_caminho)) {
                         // Se conseguiu, adiciona a posicao ao caminho e atuliza seu tamanho
-                        caminho[*tamanhoCaminho].x = x;
-                        caminho[*tamanhoCaminho].y = y;
+                        caminho[*tamanho_caminho].x = x;
+                        caminho[*tamanho_caminho].y = y;
                         
-                        (*tamanhoCaminho)++;
+                        (*tamanho_caminho)++;
                         return 1;
                     }
 
@@ -152,30 +151,30 @@ int movimentaEstudante(int** labirinto, int linhas, int colunas, int x, int y, i
             (*passos)++; // Contabiliza todas as movimentacoes do estudante
 
             // Se for uma porta, consome uma chave
-            int novasChaves = chaves;
+            int novas_chaves = chaves;
             if (labirinto[novoX][novoY] == 3) {
-                novasChaves--;
+                novas_chaves--;
             }
 
             // O estudante encontrou uma chave
             else if (labirinto[novoX][novoY] == 4) {
-                novasChaves++;
+                novas_chaves++;
             }
 
             // Tenta mover para a nova posicao
-            if (movimentaEstudante(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
+            if (movimenta_estudante(labirinto, linhas, colunas, novoX, novoY, novas_chaves, nivel + 1, caminho, passos, tamanho_caminho)) {
                 // Se conseguiu, adiciona a posicao ao caminho e atuliza seu tamanho
-                caminho[*tamanhoCaminho].x = x;
-                caminho[*tamanhoCaminho].y = y;
+                caminho[*tamanho_caminho].x = x;
+                caminho[*tamanho_caminho].y = y;
                 //*matriz[x][y] = 9;
-                (*tamanhoCaminho)++;
+                (*tamanho_caminho)++;
                 return 1;
             }
         }
     }
 
     // Desmarca a posicao e retorna ao estado anterior
-    labirinto[x][y] = estadoAtual;
+    labirinto[x][y] = estado_atual;
     return 0;
 }
 
@@ -199,13 +198,13 @@ int movimentaEstudanteMatriz(int** labirinto, int linhas, int colunas, int x, in
     }
 
     // Marca a posicao como visitada
-    int estadoAtual = labirinto[x][y];
+    int estado_atual = labirinto[x][y];
     labirinto[x][y] = 9;  // Marca o caminho atual com 9 (verde)
     printf("Linha: %d Coluna: %d\n", x, y);
     imprimeCaminho(labirinto, linhas, colunas);  // Atualiza a visualização do labirinto
     printf("\n");
 
-    if(estadoAtual == 5){
+    if(estado_atual == 5){
         // Busca a saída do portal (valor 6 no labirinto)
         for (int i = 0; i < linhas; i++) {
             for (int j = 0; j < colunas; j++) {
@@ -236,22 +235,22 @@ int movimentaEstudanteMatriz(int** labirinto, int linhas, int colunas, int x, in
             (*passos)++;  // Contabiliza as movimentações do estudante
 
             // Ajusta as chaves caso encontre uma porta ou chave
-            int novasChaves = chaves;
+            int novas_chaves = chaves;
             if (labirinto[novoX][novoY] == 3) {  // Porta
-                novasChaves--;
+                novas_chaves--;
             } else if (labirinto[novoX][novoY] == 4) {  // Chave
-                novasChaves++;
+                novas_chaves++;
             }
 
             // Move para a nova posição
-            if (movimentaEstudanteMatriz(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, passos)) {
+            if (movimentaEstudanteMatriz(labirinto, linhas, colunas, novoX, novoY, novas_chaves, nivel + 1, passos)) {
                 return 1;
             }
         }
     }
 
     // Backtracking: desmarca a posição e restaura o estado original
-    labirinto[x][y] = estadoAtual;  // Restaura o valor original
+    labirinto[x][y] = estado_atual;  // Restaura o valor original
     printf("Linha: %d Coluna: %d\n", x, y);
     imprimeCaminho(labirinto, linhas, colunas);  // Atualiza a visualização durante o backtracking
     printf("\n");

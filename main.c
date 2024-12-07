@@ -7,10 +7,6 @@
     extern int nivel_maximo_recursao;
 #endif
 
-int processaSaida(){
-    return 0;
-}
-
 
 int main() {
     FILE *file_grafico = fopen("Grafico/dados_grafico.txt", "a"); // Abre e cria, se nao existir, o arquivo para escrever os dados que serao plotados no grafico
@@ -26,7 +22,7 @@ int main() {
     int opcao = 2;
     int linhas, colunas, chaves;
     unsigned int passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
-    int tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
+    int tamanho_caminho = 0; // O tamanho do caminho que leva ate a saida
     int ultima_coluna = 0; 
     Posicao inicio;
     Posicao* caminho;
@@ -83,7 +79,6 @@ int main() {
                     break;
                 }    
                 
-            
                 if(resultado_labirinto == -1){
                     // Captura o tempo inicial
                     start_time = clock();
@@ -99,10 +94,10 @@ int main() {
                     // Vetor para armazenar o caminho feito pelo estudante
                     caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
                     passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
-                    tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
+                    tamanho_caminho = 0; // O tamanho do caminho que leva ate a saida
                     ultima_coluna = 0; 
 
-                    resultado_labirinto = movimentaEstudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
+                    resultado_labirinto = movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanho_caminho); // 1 - tem saida | 0 - nao tem saida{
                     end_time = clock(); // Captura o tempo final
                     elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC; // Calcula o tempo total
 
@@ -118,7 +113,7 @@ int main() {
                     printf("\nO estudante se movimentou %d vezes e percebeu que o labirinto nao tem saida.\n", passos);
                 } else {
                     printf("\nCaminho do estudante:\n\n");
-                    for (int i = tamanhoCaminho - 1; i >= 0; i--) { // Exibe o caminho feito ate saida comecando do inicio e indo ate a linha 0
+                    for (int i = tamanho_caminho - 1; i >= 0; i--) { // Exibe o caminho feito ate saida comecando do inicio e indo ate a linha 0
                         printf("Linha: %d Coluna: %d\n", caminho[i].x, caminho[i].y);
                         ultima_coluna = caminho[i].y;
                     }
@@ -141,7 +136,7 @@ int main() {
             case 3:
                 srand(time(NULL)); 
                 int linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, dificuldade, portal; // Dados que serao usados para gerar o labirinto
-                char nomeArquivo[100];
+                char nome_arquivo[100];
 
                 printf("Digite a quantidade de linhas: ");
                 scanf("%d", &linhas_teste);
@@ -166,14 +161,14 @@ int main() {
                     break;
                 }
                 printf("Digite o nome do arquivo que você deseja gerar. (Exemplo: 'teste.txt'): ");
-                scanf("%s", nomeArquivo);
+                scanf("%s", nome_arquivo);
                
                 // Verifica se o nome do arquivo esta no formato correto
-                if (!strstr(nomeArquivo, ".txt")) {
-                    strcat(nomeArquivo, ".txt");
+                if (!strstr(nome_arquivo, ".txt")) {
+                    strcat(nome_arquivo, ".txt");
                 }
                 
-                if(geraLabirintoTeste(linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, nomeArquivo, dificuldade, portal)){
+                if(geraLabirintoTeste(linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, nome_arquivo, dificuldade, portal)){
                     printf("Erro ao gerar o labirinto de teste! Por favor, tente de novo! \n");
                     printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
                     getchar(); 
@@ -182,7 +177,7 @@ int main() {
                 }
 
 
-                printf("Labirinto gerado e salvo no arquivo '%s'\n", nomeArquivo);
+                printf("Labirinto gerado e salvo no arquivo '%s'\n", nome_arquivo);
                 printf("Pressione Enter para continuar... \n");
                 getchar(); 
                 getchar(); 
@@ -211,10 +206,10 @@ int main() {
                     // Vetor para armazenar o caminho feito pelo estudante
                     caminho = (Posicao*)malloc(linhas * colunas * sizeof(Posicao));
                     passos = 0; // Contador de passos (usigned pois nao pode ser negativo e pode ser muito grande)
-                    tamanhoCaminho = 0; // O tamanho do caminho que leva ate a saida
+                    tamanho_caminho = 0; // O tamanho do caminho que leva ate a saida
                     ultima_coluna = 0; 
 
-                    resultado_labirinto = movimentaEstudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanhoCaminho); // 1 - tem saida | 0 - nao tem saida{
+                    resultado_labirinto = movimenta_estudante(labirinto, linhas, colunas, inicio.x, inicio.y, chaves, 0, caminho, &passos, &tamanho_caminho); // 1 - tem saida | 0 - nao tem saida{
                     end_time = clock(); // Captura o tempo final
                     elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC; // Calcula o tempo total
 
@@ -258,6 +253,7 @@ int main() {
         
     }
 
+    // Libera a memoria alocada
     if(labirinto != NULL){
         liberaLabirinto(labirinto, linhas);
         if(matriz != NULL)

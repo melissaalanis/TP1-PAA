@@ -1,21 +1,35 @@
 #include "LabirintoTeste.h"
 
-// Alocando memoria para o labirinto
 int** alocaLabirintoTeste(int linhas, int colunas) {
     int** labirinto = (int**)malloc(linhas * sizeof(int*));
+    if (!labirinto) {
+        printf("Erro: Falha ao alocar memória para o labirinto.\n");
+        return NULL;
+    }
     for (int i = 0; i < linhas; i++) {
         labirinto[i] = (int*)malloc(colunas * sizeof(int));
+        if (!labirinto[i]) {
+            printf("Erro: Falha ao alocar memória para a linha %d.\n", i);
+            liberaLabirintoTeste(labirinto, i);
+            return NULL;
+        }
     }
     return labirinto;
 }
 
-// Libera a memoria do labirinto
 void liberaLabirintoTeste(int** labirinto, int linhas) {
+    if (!labirinto) return; // Verifica se o ponteiro é NULL
     for (int i = 0; i < linhas; i++) {
-        free(labirinto[i]);
+        if (labirinto[i]) { // Verifica se cada linha foi alocada
+            free(labirinto[i]);
+            labirinto[i] = NULL; // Evita dangling pointers
+        }
     }
     free(labirinto);
+    labirinto = NULL; // Evita dangling pointers
 }
+
+
 
 // Gera um numero aleatorio entre minimo e maximo
 int numeroAleatorio(int minimo, int maximo) {
@@ -27,7 +41,7 @@ int calculaCelulasLivres(int linhas, int colunas, int dificuldade) {
 
     // Estimativa de paredes baseadas na dificuldade
     int paredes_estimada = 0;
-    if (dificuldade == 1) {
+    if (dificuldade <= 1) {
         paredes_estimada = total_celulas / 5; // 20%
     } else if (dificuldade == 2) {
         paredes_estimada = total_celulas / 4; // 25%
@@ -39,13 +53,14 @@ int calculaCelulasLivres(int linhas, int colunas, int dificuldade) {
     return celulas_livres;  
 }
 
-int verificaLimites(int linhas, int colunas, int portas, int chaves_caminho, int portal, int dificuldade) {
-    
+int verificaLimites(int linhas, int colunas, int portas, int chaves_caminho, int portal, int dificuldade, int chaves) {
+    if(linhas <= 0 || colunas <= 0 || portas < 0 || chaves_caminho < 0 || portal < 0 || dificuldade < 0 || chaves < 0){
+        return 1;
+    }
     int celulas_livres = calculaCelulasLivres(linhas, colunas, dificuldade);
     int elementos = portas * 3 + chaves_caminho + (portal > 0 ? 2 : 0);
 
-    if (elementos >= celulas_livres / 2 ) {
-        
+    if (elementos >= celulas_livres / 2 ) {        
         return 1; 
     }
     if(colunas <3){
@@ -57,13 +72,17 @@ int verificaLimites(int linhas, int colunas, int portas, int chaves_caminho, int
 
 // Gera o labirinto de teste com base nos parametros passados
 int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chaves_caminho, const char* nomeArquivo, int dificuldade, int portal) {
+    
     int** labirinto = alocaLabirintoTeste(linhas, colunas);
-    FILE* arquivo = fopen(nomeArquivo, "w"); // Cria o arquivo para salvar o labirinto
+    if (labirinto == NULL) {
+        return 1; // Retorna 1 se houver erro
+    }
 
+    FILE* arquivo = fopen(nomeArquivo, "w"); // Cria o arquivo para salvar o labirinto
     if (!arquivo) {
         printf("Erro ao criar o arquivo!\n");
         liberaLabirintoTeste(labirinto, linhas);
-        return 1; // Retorna 1 se houver err
+        return 1; // Retorna 1 se houver erro
     }
 
     fprintf(arquivo, "%d %d %d\n", linhas, colunas, chaves); // coloca no arquivo as informacoes
@@ -74,10 +93,11 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
             labirinto[i][j] = 1;  
         }
     }
+
     if(dificuldade > 3){
         dificuldade = 3;
     }
-    if(dificuldade < 1){
+    if(dificuldade == 0){
         dificuldade = 1;
     }
 
@@ -143,7 +163,7 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
         }
     }  
     
-    if(portal > 1 || portal < 0){
+    if(portal > 1){
         portal = numeroAleatorio(0,1); // Se o portal for diferente de 0 ou 1, ele sera aleatorio
     }
 
@@ -175,7 +195,8 @@ int geraLabirintoTeste(int linhas, int colunas, int chaves, int portas, int chav
 
     fflush(arquivo);
     fclose(arquivo);
-    //liberaLabirintoTeste(labirinto, linhas);
+    
+    liberaLabirintoTeste(labirinto, linhas);
     return 0;
 }
 

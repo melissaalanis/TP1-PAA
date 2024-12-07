@@ -22,7 +22,6 @@ int processaLabirinto(char nome_arquivo[], int* linhas, int* colunas, int* chave
         printf("Erro ao abrir o arquivo!\n");
         return 1;
     }
-
     // Le as dimensoes e numero de chaves
     fscanf(arquivo, "%d %d %d", linhas, colunas, chaves);
 

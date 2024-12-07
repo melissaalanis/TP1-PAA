@@ -62,7 +62,13 @@ int main() {
                     liberaLabirinto(labirinto, linhas);
                     if(matriz != NULL)
                         liberaLabirinto(matriz, linhas);
+                        matriz = NULL;
                     free(caminho);
+                    #if MODO_ANALISE == 1 // Quando o valor for 1, o modo analise estara ativado
+                        chamadas_recursivas = 0;
+                        nivel_maximo_recursao = 0;
+                    #endif
+                    labirinto = NULL; 
                 }
                 resultado_labirinto = -1; // Indica que nunca foi calculado a saida
 
@@ -152,14 +158,13 @@ int main() {
                 printf("Digite a quantidade de portais (0 ou 1): ");
                 scanf("%d", &portal);
 
-                if (verificaLimites(linhas_teste, colunas_teste, portas_teste, chaves_caminho, portal, dificuldade)) {
+                if (verificaLimites(linhas_teste, colunas_teste, portas_teste, chaves_caminho, portal, dificuldade, chaves_teste)) {
                     printf("Nao eh possivel gerar labirinto com esses valores. Por favor, tente de novo! \n");
                     printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
                     getchar(); 
                     getchar(); 
                     break;
                 }
-
                 printf("Digite o nome do arquivo que você deseja gerar. (Exemplo: 'teste.txt'): ");
                 scanf("%s", nomeArquivo);
                
@@ -175,6 +180,8 @@ int main() {
                     getchar(); 
                     break;
                 }
+
+
                 printf("Labirinto gerado e salvo no arquivo '%s'\n", nomeArquivo);
                 printf("Pressione Enter para continuar... \n");
                 getchar(); 
@@ -251,6 +258,12 @@ int main() {
         
     }
 
+    if(labirinto != NULL){
+        liberaLabirinto(labirinto, linhas);
+        if(matriz != NULL)
+            liberaLabirinto(matriz, linhas);
+        free(caminho);
+    }
     // Fecha o arquivo do grafico
     fclose(file_grafico);
     return 0;

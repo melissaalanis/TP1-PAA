@@ -126,7 +126,7 @@ int movimentaEstudante(int** labirinto, int linhas, int colunas, int x, int y, i
             for (int j = 0; j < colunas; j++) {
                 if (labirinto[i][j] == 6) {
                     // Tenta mover para a nova posicao
-                    if (movimenta_estudante(labirinto, linhas, colunas, i, j, chaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
+                    if (movimentaEstudante(labirinto, linhas, colunas, i, j, chaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
                         // Se conseguiu, adiciona a posicao ao caminho e atuliza seu tamanho
                         caminho[*tamanhoCaminho].x = x;
                         caminho[*tamanhoCaminho].y = y;
@@ -164,7 +164,7 @@ int movimentaEstudante(int** labirinto, int linhas, int colunas, int x, int y, i
             }
 
             // Tenta mover para a nova posicao
-            if (movimenta_estudante(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
+            if (movimentaEstudante(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, caminho, passos, tamanhoCaminho)) {
                 // Se conseguiu, adiciona a posicao ao caminho e atuliza seu tamanho
                 caminho[*tamanhoCaminho].x = x;
                 caminho[*tamanhoCaminho].y = y;
@@ -215,7 +215,7 @@ int movimentaEstudanteMatriz(int** labirinto, int linhas, int colunas, int x, in
                     printf("Transportando para a saída do portal (%d, %d).\n", i, j);
                     // Tenta mover para a nova posicao
                     printf("\n");
-                    if (movimenta_estudante_matriz(labirinto, linhas, colunas, i, j, chaves, nivel + 1, passos)) {
+                    if (movimentaEstudanteMatriz(labirinto, linhas, colunas, i, j, chaves, nivel + 1, passos)) {
                         return 1;
                     }
 
@@ -245,7 +245,7 @@ int movimentaEstudanteMatriz(int** labirinto, int linhas, int colunas, int x, in
             }
 
             // Move para a nova posição
-            if (movimenta_estudante_matriz(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, passos)) {
+            if (movimentaEstudanteMatriz(labirinto, linhas, colunas, novoX, novoY, novasChaves, nivel + 1, passos)) {
                 return 1;
             }
         }

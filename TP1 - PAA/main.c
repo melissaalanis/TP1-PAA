@@ -36,7 +36,7 @@ int main() {
     int resultado_labirinto = -1; // Indica que nunca foi calculado a saida
 
     printf("|-------------------------------------------------------|\n");
-    printf("|                   Bem-Vinda(o) \U0001F49A                     |\n");
+    printf("|                   Bem-Vindo(a) \U0001F49A                     |\n");
     printf("|-------------------------------------------------------|\n");
     
     while(opcao == 1 || opcao==2 || opcao==3 || opcao==4){  //O codigo entra em looping ate que o usuario queira sair (opcao 4)
@@ -109,7 +109,7 @@ int main() {
 
                 if (resultado_labirinto == 0) {
                     imprimeCaminho(labirinto, linhas, colunas);
-                    printf("\nO estudante se movimentou %d e percebeu que o labirinto nao tem saida.\n", passos);
+                    printf("\nO estudante se movimentou %d vezes e percebeu que o labirinto nao tem saida.\n", passos);
                 } else {
                     printf("\nCaminho do estudante:\n\n");
                     for (int i = tamanhoCaminho - 1; i >= 0; i--) { // Exibe o caminho feito ate saida comecando do inicio e indo ate a linha 0
@@ -120,8 +120,6 @@ int main() {
                     imprimeCaminho(labirinto, linhas, colunas);
 
                 }
-
-
 
                 #if MODO_ANALISE == 1 // Quando o valor for 1, o modo analise estara ativado
                     printf("\nChamadas recursivas: %d\n", chamadas_recursivas);
@@ -153,6 +151,14 @@ int main() {
                 scanf("%d", &dificuldade);
                 printf("Digite a quantidade de portais (0 ou 1): ");
                 scanf("%d", &portal);
+
+                if (verificaLimites(linhas_teste, colunas_teste, portas_teste, chaves_caminho, portal, dificuldade)) {
+                    printf("Nao eh possivel gerar labirinto com esses valores. Por favor, tente de novo! \n");
+                    printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
+                    getchar(); 
+                    getchar(); 
+                    break;
+                }
 
                 printf("Digite o nome do arquivo que você deseja gerar. (Exemplo: 'teste.txt'): ");
                 scanf("%s", nomeArquivo);
@@ -215,7 +221,7 @@ int main() {
 
                 if(resultado_labirinto == 0){
                     imprimeCaminho(labirinto, linhas, colunas);
-                    printf("\nO estudante se movimentou %d e percebeu que o labirinto nao tem saida.\n\n", passos);
+                    printf("\nO estudante se movimentou %d vezes e percebeu que o labirinto nao tem saida.\n\n", passos);
                 } else {
                     // Preenche os dados do labirinto
                     processaLabirinto(nome_arquivo, &linhas, &colunas, &chaves, &inicio, &matriz);

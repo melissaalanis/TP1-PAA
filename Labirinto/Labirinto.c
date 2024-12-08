@@ -180,11 +180,6 @@ int movimenta_estudante(int** labirinto, int linhas, int colunas, int x, int y, 
 
 // Imprime cada movimento do estudante no labirinto (desenho colorido)
 int movimentaEstudanteMatriz(int** labirinto, int linhas, int colunas, int x, int y, int chaves, int nivel, unsigned int* passos) {
-    #if MODO_ANALISE == 1
-        chamadas_recursivas++;
-        if (nivel > nivel_maximo_recursao) nivel_maximo_recursao = nivel;
-    #endif
-
     // Caso base: chegou na primeira linha
     if (x == 0) {
         labirinto[x][y] = 9; // Marca a posicao como visitada

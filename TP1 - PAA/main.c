@@ -1,3 +1,10 @@
+/*
+Caio Menezes Oliveira [5784]
+Amanda Caroline Melo Assunção [5366]
+Melissa Alanis Santos Oliveira [5384]
+Leticia Cristina Almeida da Silva [5781]
+*/
+
 #include <time.h>
 #include "Labirinto/Labirinto.h"
 #include "LabirintoTeste/LabirintoTeste.h"

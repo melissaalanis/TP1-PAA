@@ -136,7 +136,7 @@ int main() {
             case 3:
                 srand(time(NULL)); 
                 int linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, dificuldade, portal; // Dados que serao usados para gerar o labirinto
-                char nome_arquivo[100];
+                char nome_arquivo_teste[100];
 
                 printf("Digite a quantidade de linhas: ");
                 scanf("%d", &linhas_teste);
@@ -161,14 +161,14 @@ int main() {
                     break;
                 }
                 printf("Digite o nome do arquivo que você deseja gerar. (Exemplo: 'teste.txt'): ");
-                scanf("%s", nome_arquivo);
+                scanf("%s", nome_arquivo_teste);
                
                 // Verifica se o nome do arquivo esta no formato correto
-                if (!strstr(nome_arquivo, ".txt")) {
-                    strcat(nome_arquivo, ".txt");
+                if (!strstr(nome_arquivo_teste, ".txt")) {
+                    strcat(nome_arquivo_teste, ".txt");
                 }
                 
-                if(geraLabirintoTeste(linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, nome_arquivo, dificuldade, portal)){
+                if(geraLabirintoTeste(linhas_teste, colunas_teste, chaves_teste, portas_teste, chaves_caminho, nome_arquivo_teste, dificuldade, portal)){
                     printf("Erro ao gerar o labirinto de teste! Por favor, tente de novo! \n");
                     printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
                     getchar(); 
@@ -177,13 +177,14 @@ int main() {
                 }
 
 
-                printf("Labirinto gerado e salvo no arquivo '%s'\n", nome_arquivo);
+                printf("Labirinto gerado e salvo no arquivo '%s'\n", nome_arquivo_teste);
                 printf("Pressione Enter para continuar... \n");
                 getchar(); 
                 getchar(); 
                 break;
 
             case 4:
+            
                 if (strcmp(nome_arquivo, "") == 0) { // Verifica se o nome do arquivo foi carregado
                     printf("Por favor, carregue antes um arquivo de dados! \n");
                     printf("Pressione qualquer tecla para continuar... \n"); // Se nenhum arquivo foi informado, volta para o menu
@@ -191,7 +192,7 @@ int main() {
                     getchar(); 
                     break;
                 }
-
+              
                 if(resultado_labirinto == -1){
                     // Captura o tempo inicial
                     start_time = clock();

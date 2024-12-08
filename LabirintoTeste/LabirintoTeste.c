@@ -7,8 +7,10 @@ int numeroAleatorio(int minimo, int maximo) {
 
 int calculaCelulasLivres(int linhas, int colunas, int dificuldade) {
     int total_celulas = linhas * colunas;
-    //Como são criadas paredes de acordo com a dificuldade, faz se uma estimativa de quantas serão criadas uma vez que é aleatoriamente e não tem como prever
-    //A previsão é feita dividindo a quantidade total de células pela quantidade de probabilidade de paredes escolhidas na geração de labirintos
+    /*Como são criadas paredes de acordo com a dificuldade, faz se uma estimativa de quantas 
+    serão criadas uma vez que é aleatoriamente e não tem como prever
+    A previsão é feita dividindo a quantidade total de células pela quantidade 
+    de probabilidade de paredes escolhidas na geração de labirintos*/
     int paredes_estimada = 0;
     if (dificuldade == 1) {
         paredes_estimada = total_celulas / 5; // 20%
@@ -18,26 +20,30 @@ int calculaCelulasLivres(int linhas, int colunas, int dificuldade) {
         paredes_estimada = total_celulas / 3; // 33%
     }
     //Apos estimar a quantidade 
-    int reservadas = 1; // Para entrada e saída
+    int reservadas = 1; // Para entrada 
     int celulas_livres = total_celulas - paredes_estimada - reservadas;
     return celulas_livres;  
 }
 
 int verificaLimites(int linhas, int colunas, int portas, int chaves_caminho, int portal, int dificuldade, int chaves) {
-    if(linhas <= 0 || colunas <= 0 || portas < 0 || chaves_caminho < 0 || portal < 0 || dificuldade <= 0 || chaves < 0){ // Verifica se os elemntos do labirinto são lógicos
+    // Verifica se os elemntos do labirinto são lógicos
+    if(linhas <= 0 || colunas <= 0 || portas < 0 || chaves_caminho < 0 || portal < 0 || dificuldade <= 0 || chaves < 0){ 
         return 1;
     }
     int celulas_livres = calculaCelulasLivres(linhas, colunas, dificuldade);
-    int elementos = portas * 3 + chaves_caminho + (portal > 0 ? 2 : 0); // Soma a quantidade de elementos, para o portal, caso exista, é contabilizado 2 pois possui entrada e saída
+    // Soma a quantidade de elementos, para o portal, caso exista, é contabilizado 2 pois possui entrada e saída
+    int elementos = portas * 3 + chaves_caminho + (portal > 0 ? 2 : 0); 
     //Para as portas, o valor é multiplicado por 3, pois ao se criar uma porte duas paredes são adicionadas ao seu lado
-    if (elementos >= celulas_livres / 2 ) {    //Caso a quantidade de elementos seja maior ou igual a quantidade de celulas livres divido por 2 não é possível criar um labirinto    
-    // A comparação é feita com celulas livres / 2 para seguir a proporção de labirintos pequenos, porque por mais que tenha celulas livres pode não ser viável e lógico criar o labirinto
+    //Caso a quantidade de elementos seja maior ou igual a quantidade de celulas livres divido por 2 não é possível criar um labirinto  
+    if (elementos >= celulas_livres / 2 ) {      
+    // A comparação é feita com celulas livres / 2 para seguir a proporção de labirintos pequenos, porque por mais que 
+    //tenha celulas livres pode não ser viável e lógico criar o labirinto
         return 1;  
     }
-    if(colunas <3){ // Levando em consideração a maneira que que foi implementada a criação de labiritos se tivesse menos que 3 colunas seria inviavel 
+    if(colunas <3){ // Levando em consideração a maneira que que foi implementada a criação de labiritos 
+    //se tivesse menos que 3 colunas seria inviavel 
         return 1;
     }
-
     return 0; 
 }
 
